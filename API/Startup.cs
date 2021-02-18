@@ -1,4 +1,5 @@
 using API.Data;
+using API.Extensions;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -32,24 +33,9 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<DataContext>(obtions =>
-            {
-                obtions.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-            });
             services.AddCors();
-            services.AddScoped<TokenService>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.Configuration["TokenKey"])),
-                ValidateIssuer = false,
-                ValidateAudience = false
-
-            };
-        });
-            
+            services.AddAplicationServices(this.Configuration);
+            services.AddIdentityServices(this.Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
